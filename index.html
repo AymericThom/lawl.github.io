@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Urban Pulse - Whitelist</title>
+  <style>
+    body {
+      background-color: #111;
+      color: #f5f5f5;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem;
+    }
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+    button {
+      background-color: #1c1c1e;
+      color: white;
+      border: none;
+      padding: 1rem 2rem;
+      font-size: 1.2rem;
+      border-radius: 12px;
+      cursor: pointer;
+      margin-top: 1rem;
+    }
+    .card {
+      background: #1c1c1e;
+      padding: 2rem;
+      border-radius: 16px;
+      width: 100%;
+      max-width: 800px;
+      margin-top: 2rem;
+    }
+    .progress-bar {
+      width: 100%;
+      background-color: #333;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+    }
+    .progress-bar-fill {
+      height: 20px;
+      background-color: #2ecc71;
+      border-radius: 10px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .question-box {
+      margin-top: 2rem;
+    }
+    .btn-response {
+      margin-top: 1rem;
+      margin-right: 10px;
+      padding: 0.7rem 1.5rem;
+      border-radius: 8px;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+    }
+    .btn-correct {
+      background-color: #27ae60;
+      color: white;
+    }
+    .btn-incorrect {
+      background-color: #c0392b;
+      color: white;
+    }
+    .checkbox-container {
+      margin-top: 2rem;
+      font-size: 1rem;
+    }
+    .hidden {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>Urban Pulse</h1>
+
+  <div class="card" id="introCard">
+    <p>Avant de commencer la Whitelist, posez ces questions :</p>
+    <ul>
+      <li>Nom Prénom et Âge IRL ?</li>
+      <li>Ancienneté sur FiveM (nombre d'heures) ?</li>
+      <li>Serveurs précédents fréquentés ?</li>
+      <li>Background et ambitions RP ?</li>
+    </ul>
+    <div class="checkbox-container">
+      <label>
+        <input type="checkbox" id="readyCheck"> Le joueur a répondu à ces questions
+      </label>
+    </div>
+    <button onclick="checkIntro()">Démarrer la WL</button>
+  </div>
+
+  <div class="card hidden" id="wlCard">
+    <div class="progress-bar">
+      <div id="progressFill" class="progress-bar-fill"></div>
+    </div>
+    <div id="questionContainer" class="question-box"></div>
+  </div>
+
+  <div class="card hidden" id="resultCard"></div>
+
+  <script>
+    const lexiqueQuestions = [
+      { q: "Définis le powergaming.", a: "Utiliser les mécaniques du jeu pour forcer une action irréaliste ou non prévue dans un cadre RP.", cat: "lexique" },
+      { q: "Qu’est-ce que le metagaming ?", a: "Utiliser des informations obtenues HRP dans le RP.", cat: "lexique" },
+      { q: "Explique le no pain RP.", a: "Ignorer la douleur physique ou mentale que devrait ressentir son personnage.", cat: "lexique" },
+      { q: "Décris le force RP.", a: "Forcer une action RP à un joueur sans lui laisser de choix crédible ou interaction.", cat: "lexique" },
+      { q: "C’est quoi le fail RP ?", a: "Casser l'immersion du jeu en agissant de façon incohérente avec le personnage ou l’univers RP.", cat: "lexique" },
+      { q: "Que veut dire HRP ?", a: "Hors Roleplay : tout ce qui est en dehors de l'univers RP.", cat: "lexique" },
+      { q: "Que signifie IC et OOC ?", a: "In Character (en jeu) et Out of Character (hors jeu).", cat: "lexique" },
+      { q: "Définis le fear RP.", a: "Jouer la peur de son personnage dans des situations dangereuses ou de menace.", cat: "lexique" },
+      { q: "Peut-on reconnaître un joueur uniquement à sa voix ?", a: "Non, sauf si on connaît sa voix IC via une scène RP antérieure logique.", cat: "lexique" },
+      { q: "Peut-on parler lorsqu’on est inconscient (coma) ?", a: "Non, seulement des gémissements. Aucune information verbale ne doit être donnée.", cat: "lexique" }
+    ];
+
+    const reglementQuestions = [
+      { q: "Combien de personnes maximum peuvent participer à un convoi ?", a: "10 véhicules, avec 1 à 2 personnes par véhicule.", cat: "reglement" },
+      { q: "Que doit-on faire après avoir perdu une scène RP ?", a: "Ne pas y retourner : le retour zone est interdit.", cat: "reglement" },
+      { q: "Peut-on parler en coma ?", a: "Non, seulement gémir. Aucune info verbale ne doit être donnée.", cat: "reglement" },
+      { q: "Quand a-t-on le droit de tirer depuis un véhicule ?", a: "Moins de 80 km/h, passager uniquement et avec justification RP.", cat: "reglement" },
+      { q: "Un mécano peut-il être dans une organisation criminelle ?", a: "Non, sauf rôle validé par dossier RP.", cat: "reglement" },
+      { q: "Peut-on ramener une voiture personnelle en intervention EMS ?", a: "Non, uniquement les véhicules de service.", cat: "reglement" },
+      { q: "Peut-on fouiller quelqu’un sans raison valable ?", a: "Non, il faut une justification RP claire (suspicion, preuve, etc.).", cat: "reglement" },
+      { q: "Les braquages doivent-ils être annoncés ?", a: "Oui, via un système ou une interaction RP crédible avec la police.", cat: "reglement" },
+      { q: "Combien de policiers minimum pour un braquage de banque ?", a: "4 policiers connectés et disponibles.", cat: "reglement" },
+      { q: "Un civil peut-il avoir une arme lourde sans dossier ?", a: "Non, les armes lourdes sont soumises à dossier RP validé.", cat: "reglement" },
+      { q: "Peut-on streamer sans désactiver les noms ?", a: "Non, les éléments HRP visibles doivent être masqués pour ne pas nuire à l’immersion.", cat: "reglement" },
+      { q: "Peut-on perquisitionner un appartement n'importe quand ?", a: "Non, seulement avec une preuve RP solide et accord staff en cas de doute.", cat: "reglement" }
+    ];
+
+    const misesEnSituation = [
+      { q: "Tu arrives à un gunfight en tant qu’EMS. Que fais-tu ?", a: "J’attends à distance la fin du gunfight avant d’intervenir.", cat: "situation" },
+      { q: "Un joueur masqué te menace. Tu reconnais sa voix et le dénonces. Est-ce autorisé ?", a: "Non, ce n’est pas une preuve RP suffisante.", cat: "situation" },
+      { q: "Tu fais une scène avec un joueur incohérent. Que fais-tu ?", a: "Je reste RP puis je fais un ticket staff avec preuve vidéo.", cat: "situation" },
+      { q: "Un joueur meurt pendant une course. Que dois-tu faire ?", a: "Je stoppe la course et fais appel à un EMS si possible.", cat: "situation" },
+      { q: "Tu es braqué par un groupe armé. Que fais-tu ?", a: "Je coopère et je joue le fear RP.", cat: "situation" },
+      { q: "Tu assistes à une scène de carjacking illogique. Que faire ?", a: "Je continue la scène RP puis je fais un ticket avec preuve vidéo.", cat: "situation" },
+      { q: "Tu arrives sur une scène et un joueur t’insulte en HRP. Que fais-tu ?", a: "Je reste calme, je mute s’il faut, et je contacte le staff avec preuve.", cat: "situation" },
+      { q: "Ton véhicule explose suite à un bug. Que fais-tu ?", a: "Je fais un ticket staff pour le signaler sans forcer un retour RP.", cat: "situation" }
+    ];
+
+    let questions = [];
+    let index = 0;
+    let total = 11;
+    let faults = { lexique: 0, reglement: 0, situation: 0 };
+
+    function resetAll() {
+      document.getElementById("introCard").classList.remove("hidden");
+      document.getElementById("wlCard").classList.add("hidden");
+      document.getElementById("resultCard").classList.add("hidden");
+      document.getElementById("readyCheck").checked = false;
+    }
+
+    function checkIntro() {
+      if (document.getElementById("readyCheck").checked) {
+        document.getElementById("introCard").classList.add("hidden");
+        startWL();
+      } else {
+        alert("Veuillez confirmer que les questions de présentation ont été posées.");
+      }
+    }
+
+    function getRandom(arr, n) {
+      return arr.sort(() => 0.5 - Math.random()).slice(0, n);
+    }
+
+    function startWL() {
+      questions = [
+        ...getRandom(lexiqueQuestions, 3),
+        ...getRandom(reglementQuestions, 5),
+        ...getRandom(misesEnSituation, 3)
+      ];
+      index = 0;
+      faults = { lexique: 0, reglement: 0, situation: 0 };
+      document.getElementById("wlCard").classList.remove("hidden");
+      document.getElementById("resultCard").classList.add("hidden");
+      showQuestion();
+    }
+
+    function showQuestion() {
+      const current = questions[index];
+      const progress = (index / total) * 100;
+      document.getElementById("progressFill").style.width = progress + "%";
+      document.getElementById("questionContainer").innerHTML = `
+        <p><strong>Question ${index + 1} / ${total}</strong></p>
+        <p>${current.q}</p>
+        <p><em>Réponse attendue : ${current.a}</em></p>
+        <button class="btn-response btn-correct" onclick="nextQuestion(true)">Bonne réponse</button>
+        <button class="btn-response btn-incorrect" onclick="nextQuestion(false)">Mauvaise réponse</button>
+      `;
+    }
+
+    function nextQuestion(correct) {
+      if (!correct) {
+        faults[questions[index].cat]++;
+      }
+      index++;
+      if (index >= total) {
+        finishWL();
+      } else {
+        showQuestion();
+      }
+    }
+
+    function finishWL() {
+      document.getElementById("wlCard").classList.add("hidden");
+      const result = document.getElementById("resultCard");
+      result.classList.remove("hidden");
+
+      const totalFaults = faults.lexique + faults.reglement + faults.situation;
+      let message = "";
+      let passed = true;
+
+      if (faults.lexique >= 2 || faults.reglement >= 2 || faults.situation >= 2 || totalFaults >= 4) {
+        message = "<strong>ÉCHEC :</strong> Le joueur devra repasser la WL dans 2 semaines.";
+        passed = false;
+      } else {
+        message = "<strong>RÉUSSI :</strong> Le joueur obtient la Whitelist.";
+      }
+
+      result.innerHTML = `
+        <h2>Fin de la session WL</h2>
+        <p>${message}</p>
+        <p>Fautes : Lexique = ${faults.lexique}, Règlement = ${faults.reglement}, Mise en situation = ${faults.situation}</p>
+        <button onclick="resetAll()">Démarrer une nouvelle WL</button>
+      `;
+    }
+  </script>
+</body>
+</html>
