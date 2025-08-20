@@ -84,7 +84,7 @@
   <div class="card" id="introCard">
     <p>Avant de commencer la Whitelist, posez ces questions :</p>
     <ul>
-      <li>Nom Prénom et Âge IRL ?</li>
+      <li>Âge IRL ?</li>
       <li>Ancienneté sur FiveM (nombre d'heures) ?</li>
       <li>Serveurs précédents fréquentés ?</li>
       <li>Background et ambitions RP ?</li>
@@ -121,18 +121,18 @@
     ];
 
     const reglementQuestions = [
-      { q: "Combien de personnes maximum peuvent participer à un convoi ?", a: "10 véhicules, avec 1 à 2 personnes par véhicule.", cat: "reglement" },
-      { q: "Que doit-on faire après avoir perdu une scène RP ?", a: "Ne pas y retourner : le retour zone est interdit.", cat: "reglement" },
-      { q: "Peut-on parler en coma ?", a: "Non, seulement gémir. Aucune info verbale ne doit être donnée.", cat: "reglement" },
-      { q: "Quand a-t-on le droit de tirer depuis un véhicule ?", a: "Moins de 80 km/h, passager uniquement et avec justification RP.", cat: "reglement" },
-      { q: "Un mécano peut-il être dans une organisation criminelle ?", a: "Non, sauf rôle validé par dossier RP.", cat: "reglement" },
-      { q: "Peut-on ramener une voiture personnelle en intervention EMS ?", a: "Non, uniquement les véhicules de service.", cat: "reglement" },
-      { q: "Peut-on fouiller quelqu’un sans raison valable ?", a: "Non, il faut une justification RP claire (suspicion, preuve, etc.).", cat: "reglement" },
-      { q: "Les braquages doivent-ils être annoncés ?", a: "Oui, via un système ou une interaction RP crédible avec la police.", cat: "reglement" },
-      { q: "Combien de policiers minimum pour un braquage de banque ?", a: "4 policiers connectés et disponibles.", cat: "reglement" },
-      { q: "Un civil peut-il avoir une arme lourde sans dossier ?", a: "Non, les armes lourdes sont soumises à dossier RP validé.", cat: "reglement" },
-      { q: "Peut-on streamer sans désactiver les noms ?", a: "Non, les éléments HRP visibles doivent être masqués pour ne pas nuire à l’immersion.", cat: "reglement" },
-      { q: "Peut-on perquisitionner un appartement n'importe quand ?", a: "Non, seulement avec une preuve RP solide et accord staff en cas de doute.", cat: "reglement" }
+      { q: "Quels métiers sont interdits pour les activités illégales (exemple : LSPD, EMS…)?", a: "Gouvernement, LSPD, EMS, Ammu-Nation, Dynasty 8, avocats (sauf dossier accepté)", cat: "reglement" },
+      { q: "Combien de personnes maximum peuvent travailler dans un bar/restaurant ?", a: "20 personnes", cat: "reglement" },
+      { q: "Peux-tu créer une entreprise sans faire de dossier RP ?", a: "Non, un dossier Google Slides est obligatoire.", cat: "reglement" },
+      { q: "Combien faut-il de membres minimum pour créer un groupe ?", a: "5 membres minimum", cat: "reglement" },
+      { q: "Combien d’armes lourdes un gang peut-il avoir au maximum ?", a: "0 arme lourde (seulement 3 moyennes et 10 légères).", cat: "reglement" },
+      { q: "Est-ce qu’un groupe de PF peut braquer une bijouterie ?", a: "Non, c’est interdit.", cat: "reglement" },
+      { q: "Est-ce qu’un cartel peut s’allier avec un autre groupe pendant une guerre ?", a: "Non, les alliances sont interdites en guerre.", cat: "reglement" },
+      { q: "Quelle est la différence entre une guerre intergroupe et un petit conflit ?", a: "Guerre intergroupe = dossier officiel + gros conflit RP / Petit conflit = désaccord ou tension RP sans dossier.", cat: "reglement" },
+      { q: "Combien de personnes maximum peuvent travailler dans un taxi sur le serveur ?", a: "25 personnes", cat: "reglement" },
+      { q: "Combien de personnes maximum peuvent travailler pour Weazel News ?", a: "8 personnes", cat: "reglement" },
+      { q: "Combien d’armes moyennes peut posséder un MC ou une famille au maximum ?", a: "4 armes moyennes", cat: "reglement" },
+      { q: "Pour créer ou reprendre une entreprise, quelles informations doivent obligatoirement figurer dans le dossier ?", a: "Nom de l’entreprise, activité, objectifs et motivations.", cat: "reglement" }
     ];
 
     const misesEnSituation = [
@@ -150,12 +150,14 @@
     let index = 0;
     let total = 11;
     let faults = { lexique: 0, reglement: 0, situation: 0 };
+    let wrongQuestions = { lexique: [], reglement: [], situation: [] };
 
     function resetAll() {
       document.getElementById("introCard").classList.remove("hidden");
       document.getElementById("wlCard").classList.add("hidden");
       document.getElementById("resultCard").classList.add("hidden");
       document.getElementById("readyCheck").checked = false;
+      wrongQuestions = { lexique: [], reglement: [], situation: [] };
     }
 
     function checkIntro() {
@@ -179,17 +181,19 @@
       ];
       index = 0;
       faults = { lexique: 0, reglement: 0, situation: 0 };
+      wrongQuestions = { lexique: [], reglement: [], situation: [] };
       document.getElementById("wlCard").classList.remove("hidden");
-      document.getElementById("resultCard").classList.add("hidden");
       showQuestion();
     }
 
     function showQuestion() {
       const current = questions[index];
-      const progress = (index / total) * 100;
+      const container = document.getElementById("questionContainer");
+      const progress = ((index) / total) * 100;
       document.getElementById("progressFill").style.width = progress + "%";
-      document.getElementById("questionContainer").innerHTML = `
-        <p><strong>Question ${index + 1} / ${total}</strong></p>
+
+      container.innerHTML = `
+        <h2>Question ${index + 1} / ${total}</h2>
         <p>${current.q}</p>
         <p><em>Réponse attendue : ${current.a}</em></p>
         <button class="btn-response btn-correct" onclick="nextQuestion(true)">Bonne réponse</button>
@@ -198,8 +202,10 @@
     }
 
     function nextQuestion(correct) {
+      const current = questions[index];
       if (!correct) {
-        faults[questions[index].cat]++;
+        faults[current.cat]++;
+        wrongQuestions[current.cat].push({ q: current.q, a: current.a });
       }
       index++;
       if (index >= total) {
@@ -225,10 +231,20 @@
         message = "<strong>RÉUSSI :</strong> Le joueur obtient la Whitelist.";
       }
 
+      function formatErrors(arr) {
+        if (!arr.length) return "Aucune";
+        return arr.map(obj => `${obj.q} → Réponse : ${obj.a}`).join('<br>');
+      }
+
       result.innerHTML = `
         <h2>Fin de la session WL</h2>
         <p>${message}</p>
-        <p>Fautes : Lexique = ${faults.lexique}, Règlement = ${faults.reglement}, Mise en situation = ${faults.situation}</p>
+        <h3>Récapitulatif des erreurs :</h3>
+        <ul>
+          <li>Lexique (${faults.lexique}) :<br> ${formatErrors(wrongQuestions.lexique)}</li>
+          <li>Règlement (${faults.reglement}) :<br> ${formatErrors(wrongQuestions.reglement)}</li>
+          <li>Mise en situation (${faults.situation}) :<br> ${formatErrors(wrongQuestions.situation)}</li>
+        </ul>
         <button onclick="resetAll()">Démarrer une nouvelle WL</button>
       `;
     }
