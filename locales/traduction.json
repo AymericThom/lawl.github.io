@@ -1,0 +1,103 @@
+[{
+    "title": "ADN",
+    "description_1": "Renseigne les informations liées à ton ADN,",
+    "description_primary": "attention",
+    "description_1_0": "aucun retour ne sera possible.",
+
+    "reset_position": "Réinitialiser la position",
+
+    "pick_date": "Choisir une date",
+
+    "required_sex": "Un genre est requis.",
+    "required_firstname": "Un prénom est requis avec au moins 2 caractères.",
+    "required_lastname": "Un nom de famille est requis avec au moins 2 caractères.",
+    "required_dob": "Une date de naissance est requise.",
+    "required_height": "La taille est requise.",
+
+    "primary_colors": "Couleurs primaires",
+    "secondary_colors": "Couleurs secondaires",
+    "opacity": "Opacité",
+
+    "gender": "Genre",
+    "men": "Homme",
+    "women": "Femme",
+
+    "last_name": "Nom de famille",
+    "first_name": "Prénom",
+    "height": "Taille",
+    "dob": "Date de naissance",
+
+    "dad": "Père",
+    "mom": "Mère",
+    "resemblance": "Ressemblance",
+    "skin": "Peau",
+
+    "apparence": "Apparence & Pilosité",
+    "apparence_description_1": "Définis les caractéristiques de ton apparence et de ta pilosité,",
+    "apparence_description_primary": "attention",
+    "apparence_description_1_0": "ton apparence ne pourra pas être modifiée par la suite.",
+
+    "hair": "Cheveux",
+    "beard": "Barbe",
+    "eyebrow": "Sourcils",
+    "torso": "Torse",
+    "makeup": "Maquillage",
+    "blush": "Fard à joues",
+    "lipstick": "Rouge à lèvres",
+
+    "blemishes": "Imperfections",
+    "skin_problem": "Problèmes de peau",
+    "aging": "Vieillissement",
+    "skin_uv": "Apparence",
+    "freckles": "Taches de rousseur",
+    "eye_colors": "Couleur des yeux",
+
+    "face": "Traits du visage",
+    "face_description_1": "Définis les spécificités de ton visage. Ces caractéristiques seront",
+    "face_description_primary": "permanentes",
+    "face_description_1_0": "et ne pourront pas être modifiées plus tard.",
+
+    "nose_1": "Largeur du nez",
+    "nose_2": "Hauteur du nez",
+    "nose_3": "Longueur du nez",
+    "nose_4": "Abaissement du nez",
+    "nose_5": "Abaissement de la pointe du nez",
+    "nose_6": "Torsion du nez",
+
+    "eyebrow_height": "Hauteur des sourcils",
+    "eyebrow_depth": "Profondeur des sourcils",
+
+    "cheeks_1": "Hauteur des pommettes",
+    "cheeks_2": "Largeur des pommettes",
+    "cheeks_3": "Largeur des joues",
+
+    "lip_thickness": "Épaisseur des lèvres",
+
+    "jaw_1": "Largeur de la mâchoire",
+    "jaw_2": "Longueur arrière de la mâchoire",
+
+    "chin_1": "Abaissement du menton",
+    "chin_2": "Longueur de l’os du menton",
+    "chin_3": "Largeur du menton",
+    "chin_4": "Trou du menton",
+
+    "neck_thickness": "Épaisseur du cou",
+
+    "clothes": "Vêtements",
+    "clothes_description_1": "Sélectionne et définis tes",
+    "clothes_description_primary": "vêtements",
+    "clothes_description_1_0": "préférés.",
+
+    "colors": "Couleurs",
+
+    "tshirt_1": "T-shirt",
+    "torso_1": "Torse",
+    "arms": "Bras",
+    "pants_1": "Pantalon",
+    "shoes_1": "Chaussures",
+    "glasses_1": "Lunettes",
+    "helmet_1": "Casque",
+    "mask_1": "Masque",
+
+    "confirm": "Confirmer"
+}]
